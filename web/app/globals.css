@@ -1,0 +1,19 @@
+*{box-sizing:border-box}
+:root{--bg:#0f172a;--text:#e2e8f0;--card:#111827;--border:#334155;--brand:#0ea5e9}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Segoe UI,Roboto,Arial}
+a{color:var(--text);text-decoration:none;opacity:.9} a:hover{opacity:1}
+header{position:sticky;top:0;background:rgba(17,24,39,.9);backdrop-filter: blur(6px);z-index:20}
+.container{max-width:1200px;margin:0 auto;padding:1rem}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1rem}
+.btn{display:inline-flex;align-items:center;gap:.5rem;background:var(--brand);color:#fff;border:none;border-radius:10px;padding:.55rem .85rem;cursor:pointer}
+.grid{display:grid;gap:1rem}
+input,select,textarea{width:100%;padding:.6rem;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text)}
+.table{width:100%;border-collapse:collapse}
+.table th,.table td{border-bottom:1px solid var(--border);padding:.55rem;text-align:left}
+.badge{background:#0ea5e933;border:1px solid #0ea5e955;color:#93c5fd;padding:.2rem .5rem;border-radius:999px;font-size:.8rem}
+.toolbar{display:flex;gap:.5rem;flex-wrap:wrap}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+.kpi{padding:1rem;border:1px solid var(--border);background:#0b1220;border-radius:12px}
+.logo{display:flex;align-items:center;gap:.6rem;font-weight:700}
+nav a{padding:.25rem .5rem;border-radius:8px}
+nav a.active, nav a:hover{background:#0ea5e920}

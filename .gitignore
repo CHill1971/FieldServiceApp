@@ -1,0 +1,28 @@
+# Node / Next
+node_modules/
+.npm/
+.next/
+out/
+coverage/
+*.log
+.DS_Store
+
+# Env
+.env
+.env.local
+.env.*.local
+web/.env
+web/.env.local
+
+# Firebase
+firebase-debug.log
+firebase-debug.*.log
+firebase/.seed/
+firebase/storage_export/
+firebase/firestore_export/
+
+# OS / IDE
+Thumbs.db
+.vscode/
+.idea/
+*.iml
