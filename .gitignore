@@ -1,28 +1,29 @@
-# Node / Next
+# Node
 node_modules/
-.npm/
-.next/
-out/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+.pnpm-store/
+
+# Builds
+/dist/
+/.next/
+/out/
+/build/
 coverage/
-*.log
-.DS_Store
 
 # Env
 .env
-.env.local
-.env.*.local
-web/.env
-web/.env.local
+.env.*
+!.env.example
 
-# Firebase
-firebase-debug.log
-firebase-debug.*.log
-firebase/.seed/
-firebase/storage_export/
-firebase/firestore_export/
+# Docker
+/docker-data/
 
-# OS / IDE
+# OS/editor
+.DS_Store
 Thumbs.db
-.vscode/
 .idea/
-*.iml
+.vscode/
+*.swp

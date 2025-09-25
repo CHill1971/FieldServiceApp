@@ -1,0 +1,9 @@
+import { Router } from 'express';
+import { prisma } from '../prisma.js';
+import { requireAuth, requireRole } from '../middleware/auth.js';
+export const techniciansRouter = Router();
+techniciansRouter.use(requireAuth);
+techniciansRouter.get('/me/assignments', requireRole(['TECHNICIAN']), async (req, res) => {
+    const list = await prisma.workOrder.findMany({ where: { assignedTechId: req.user.id }, orderBy: { scheduledAt: 'asc' } });
+    res.json(list);
+});

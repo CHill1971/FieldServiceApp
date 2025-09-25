@@ -1,0 +1,148 @@
+generator client {
+	provider = "prisma-client-js"
+}
+
+datasource db {
+	provider = "postgresql"
+	url      = env("DATABASE_URL")
+}
+
+model User {
+	id           String   @id @default(uuid())
+	name         String
+	email        String   @unique
+	role         Role
+	avatarUrl    String?  @map("avatar_url")
+	status       String   @default("active")
+	passwordHash String   @map("password_hash")
+	technician   Technician?
+	workOrders   WorkOrder[] @relation("AssignedTech")
+	events       Event[]   @relation("ActorEvents")
+	createdAt    DateTime @default(now()) @map("created_at")
+	updatedAt    DateTime @updatedAt @map("updated_at")
+}
+
+enum Role {
+	ADMIN
+	DISPATCHER
+	TECHNICIAN
+	MANAGER
+	BOSS
+}
+
+model Technician {
+	userId         String  @id @map("user_id")
+	phone          String?
+	certifications String?
+	user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+	workLogs       WorkLog[]
+}
+
+model Customer {
+	id        String   @id @default(uuid())
+	name      String
+	contacts  Json?
+	addresses Json?
+	workOrders WorkOrder[]
+	createdAt DateTime @default(now()) @map("created_at")
+	updatedAt DateTime @updatedAt @map("updated_at")
+}
+
+model WorkOrder {
+	id                 String      @id @default(uuid())
+	jobId              String      @unique @map("job_id")
+	customerId         String      @map("customer_id")
+	location           String
+	problemDescription String      @map("problem_description")
+	priority           String
+	scheduledAt        DateTime?   @map("scheduled_at")
+	status             String
+	assignedTechId     String?     @map("assigned_tech_id")
+	customer           Customer    @relation(fields: [customerId], references: [id])
+	assignedTech       User?       @relation("AssignedTech", fields: [assignedTechId], references: [id])
+	workLogs           WorkLog[]
+	attachments        Attachment[]
+	items              WorkOrderItem[]
+	signature          Signature?
+	invoice            Invoice?
+	timestamps         Json?
+	createdAt          DateTime @default(now()) @map("created_at")
+	updatedAt          DateTime @updatedAt @map("updated_at")
+}
+
+model WorkLog {
+	id          String   @id @default(uuid())
+	workOrderId String   @map("work_order_id")
+	techId      String   @map("tech_id")
+	startedAt   DateTime @map("started_at")
+	endedAt     DateTime? @map("ended_at")
+	note        String?
+	gps         Json?
+	workOrder   WorkOrder @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
+	tech        Technician @relation(fields: [techId], references: [userId], onDelete: Cascade)
+}
+
+model Attachment {
+	id          String   @id @default(uuid())
+	workOrderId String   @map("work_order_id")
+	type        String
+	url         String
+	meta        Json?
+	workOrder   WorkOrder @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
+	createdAt   DateTime @default(now()) @map("created_at")
+}
+
+model Item {
+	id         String  @id @default(uuid())
+	sku        String  @unique
+	name       String
+	unitPrice  Decimal @map("unit_price") @db.Decimal(10,2)
+	taxable    Boolean
+	createdAt  DateTime @default(now()) @map("created_at")
+	updatedAt  DateTime @updatedAt @map("updated_at")
+	orderItems WorkOrderItem[]
+}
+
+model WorkOrderItem {
+	id          String   @id @default(uuid())
+	workOrderId String   @map("work_order_id")
+	itemId      String   @map("item_id")
+	qty         Int
+	priceOverride Decimal? @map("price_override") @db.Decimal(10,2)
+	workOrder   WorkOrder @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
+	item        Item      @relation(fields: [itemId], references: [id])
+}
+
+model Signature {
+	id          String   @id @default(uuid())
+	workOrderId String   @unique @map("work_order_id")
+	signedBy    String   @map("signed_by")
+	imageUrl    String   @map("image_url")
+	signedAt    DateTime @map("signed_at")
+	workOrder   WorkOrder @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
+}
+
+model Invoice {
+	id          String   @id @default(uuid())
+	workOrderId String   @unique @map("work_order_id")
+	subtotal    Decimal  @db.Decimal(10,2)
+	tax         Decimal  @db.Decimal(10,2)
+	total       Decimal  @db.Decimal(10,2)
+	pdfUrl      String   @map("pdf_url")
+	status      String
+	workOrder   WorkOrder @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
+	createdAt   DateTime @default(now()) @map("created_at")
+}
+
+model Event {
+	id        String   @id @default(uuid())
+	entity    String
+	entityId  String   @map("entity_id")
+	actorId   String?  @map("actor_id")
+	action    String
+	at        DateTime
+	meta      Json?
+	actor     User?    @relation("ActorEvents", fields: [actorId], references: [id])
+
+	@@index([entity, entityId])
+}
