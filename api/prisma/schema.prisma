@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  role      String
+  avatarUrl String?
+  status    String
+  Technician Technician?
+}
+
+model Technician {
+  userId         String   @id
+  user           User     @relation(fields: [userId], references: [id])
+  phone          String?
+  certifications String?
+  WorkLogs       WorkLog[]
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  name      String
+  contacts  String?
+  addresses String?
+  WorkOrders WorkOrder[]
+}
+
+model WorkOrder {
+  id                 String     @id @default(uuid())
+  customerId         String
+  customer           Customer   @relation(fields: [customerId], references: [id])
+  location           String
+  problemDescription String
+  priority           String?
+  scheduledAt        DateTime?
+  status             String
+  assignedTechId     String?
+  assignedTech       Technician? @relation(fields: [assignedTechId], references: [userId])
+  timestamps         DateTime[] // created, updated, etc.
+  WorkLogs           WorkLog[]
+  Attachments        Attachment[]
+  WorkOrderItems     WorkOrderItem[]
+  Signature          Signature?
+  Invoice            Invoice?
+}
+
+model WorkLog {
+  id         String   @id @default(uuid())
+  workOrder  WorkOrder @relation(fields: [workOrderId], references: [id])
+  workOrderId String
+  tech       Technician @relation(fields: [techId], references: [userId])
+  techId     String
+  startedAt  DateTime
+  endedAt    DateTime?
+  note       String?
+  gps        String?
+}
+
+model Attachment {
+  id          String   @id @default(uuid())
+  workOrder   WorkOrder @relation(fields: [workOrderId], references: [id])
+  workOrderId String
+  type        String
+  url         String
+  meta        String?
+}
+
+model Item {
+  id        String   @id @default(uuid())
+  sku       String   @unique
+  name      String
+  unitPrice Float
+  taxable   Boolean
+  WorkOrderItems WorkOrderItem[]
+}
+
+model WorkOrderItem {
+  id          String   @id @default(uuid())
+  workOrder   WorkOrder @relation(fields: [workOrderId], references: [id])
+  workOrderId String
+  item        Item      @relation(fields: [itemId], references: [id])
+  itemId      String
+  qty         Int
+  priceOverride Float?
+}
+
+model Signature {
+  id          String   @id @default(uuid())
+  workOrder   WorkOrder @relation(fields: [workOrderId], references: [id])
+  workOrderId String
+  signedBy    String
+  imageUrl    String
+  signedAt    DateTime
+}
+
+model Invoice {
+  id          String   @id @default(uuid())
+  workOrder   WorkOrder @relation(fields: [workOrderId], references: [id])
+  workOrderId String
+  subtotal    Float
+  tax         Float
+  total       Float
+  pdfUrl      String
+  status      String
+}
+
+model Event {
+  id        String   @id @default(uuid())
+  entity    String
+  entityId  String
+  actorId   String
+  action    String
+  at        DateTime
+  meta      String?
+}
