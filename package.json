@@ -1,0 +1,16 @@
+{
+  "name": "premium-field-service",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:api": "npm --prefix apps/api run dev",
+    "build:api": "npm --prefix apps/api run build",
+    "start:api": "npm --prefix apps/api run start",
+    "compose:up": "docker compose up --build",
+    "compose:down": "docker compose down -v"
+  }
+}
